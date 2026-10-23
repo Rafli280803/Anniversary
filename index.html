@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="web_blank" name="shell-type"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style>
+        @layer base {
+            html, body { margin: 0; padding: 0; }
+            body { overscroll-behavior: none; }
+            main > :first-child { margin-top: 0 !important; }
+            main > :last-child { margin-bottom: 0 !important; }
+        }
+        ::-webkit-scrollbar { display: none; }
+        @keyframes floatPetal {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        .ambient-heart {
+            position: fixed;
+            bottom: -20px;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatPetal 14s linear infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-popUp {
+            animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* ========================================== */
+        /* STYLES COUNTER JAM                         */
+        /* ========================================== */
+        .counter {
+            position: relative;
+            display: inline-flex;
+            align-items: baseline;
+            line-height: 1;
+            white-space: nowrap;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+        .counter__sr {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+            border: 0;
+        }
+        .counter__row {
+            display: inline-flex;
+            align-items: baseline;
+            margin: 0 calc(var(--counter-gap, 0px) / -2);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .counter__affix,
+        .counter__digit,
+        .counter__symbol {
+            margin: 0 calc(var(--counter-gap, 0px) / 2 * var(--counter-shown, 1));
+            opacity: var(--counter-shown, 1);
+        }
+        .counter__affix {
+            white-space: pre;
+        }
+        .counter__digit {
+            position: relative;
+            display: inline-block;
+            box-sizing: content-box;
+            line-height: calc(1em + var(--counter-padding, 0px));
+            text-align: center;
+        }
+        .counter__sizer {
+            visibility: hidden;
+        }
+        .counter__window {
+            position: absolute;
+            top: calc(var(--counter-fade, 0em) * -1);
+            right: 0;
+            bottom: calc(var(--counter-fade, 0em) * -1);
+            left: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .counter__strip {
+            position: absolute;
+            inset: 0;
+        }
+        .counter__numeral {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+        }
+        .counter__symbol {
+            position: relative;
+            display: inline-flex;
+            justify-content: center;
+            clip-path: inset(-0.5em 0);
+        }
+        .counter__symbol-text {
+            display: inline-block;
+            white-space: pre;
+        }
+        .counter__blur {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+        .counter__measure {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .counter__measure > span {
+            display: inline-block;
+        }
+
+        /* ========================================== */
+        /* STYLES KHUSUS PUZZLE                       */
+        /* ========================================== */
+        #puzzle-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: transparent; 
+            border: 2px dashed #864d5e; 
+            border-radius: 8px;
+            padding: 4px;
+        }
+        .puzzle-drop-zone {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(134, 77, 94, 0.05); 
+            border: 1px dashed rgba(134, 77, 94, 0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background-color 0.2s;
+        }
+        .puzzle-drop-zone.hovered {
+            background-color: rgba(134, 77, 94, 0.2);
+        }
+        #puzzle-tray {
+            width: 100%;
+            max-width: 400px;
+            min-height: 120px;
+            margin: 1rem auto 0;
+            padding: 1rem;
+            background-color: #f9f3eb; 
+            border-radius: 12px;
+            border: 2px solid #e8e1da;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        .puzzle-piece {
+            background-size: 300% 300%;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: transform 0.15s ease-in-out, box-shadow 0.15s, border 0.15s;
+            position: relative;
+        }
+        #puzzle-tray .puzzle-piece {
+            width: 30%; 
+            aspect-ratio: var(--img-ratio, 1);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .puzzle-drop-zone .puzzle-piece {
+            width: 100%;
+            height: 100%;
+            box-shadow: none;
+            border: none;
+            border-radius: 0;
+        }
+        .puzzle-piece:hover {
+            filter: brightness(1.05);
+        }
+        .puzzle-piece.selected {
+            transform: scale(0.92);
+            box-shadow: 0 0 0 4px #6a243b; 
+            z-index: 10;
+        }
+
+        /* ========================================== */
+        /* STYLES CIRCULAR CAROUSEL (CHAPTER 3)       */
+        /* ========================================== */
+        .circular-carousel {
+            --cc-fade: #000000;
+            --cc-radius: 12px;
+            --cc-inner: 0.1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            outline: none;
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .circular-carousel[data-axis='x'] {
+            touch-action: pan-x;
+        }
+        
+        .circular-carousel[data-draggable] {
+            cursor: grab;
+        }
+        
+        .circular-carousel[data-dragging] {
+            cursor: grabbing;
+        }
+        
+        .circular-carousel:focus-visible {
+            box-shadow: inset 0 0 0 2px rgba(128, 128, 140, 0.55);
+        }
+        
+        .circular-carousel__view {
+            position: absolute;
+            inset: 0;
+        }
+        
+        .circular-carousel[data-shape='wheel'] .circular-carousel__view {
+            -webkit-mask-image: linear-gradient(to bottom, transparent, #000000 18%, #000000 82%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, #000000 18%, #000000 82%, transparent);
+        }
+        
+        .circular-carousel[data-shape='panorama'] .circular-carousel__view {
+            -webkit-mask-image: linear-gradient(to right, transparent, #000000 12%, #000000 88%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000000 12%, #000000 88%, transparent);
+        }
+        
+        .circular-carousel__stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.45s ease;
+        }
+        
+        .circular-carousel[data-ready] .circular-carousel__stage {
+            opacity: 1;
+        }
+        
+        .circular-carousel__camera,
+        .circular-carousel__ring,
+        .circular-carousel__card {
+            width: 0;
+            height: 0;
+            transform-style: preserve-3d;
+        }
+        
+        .circular-carousel__camera {
+            position: relative;
+            perspective: 1200px;
+        }
+        
+        .circular-carousel__ring,
+        .circular-carousel__card {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .circular-carousel__tile {
+            position: absolute;
+            outline: 1px solid transparent;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        
+        .circular-carousel__frame {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: var(--cc-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .circular-carousel__photo {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            object-fit: cover;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        .circular-carousel__photo--leaving {
+            animation: circular-carousel-leave 700ms cubic-bezier(0.33, 1, 0.68, 1) both;
+        }
+        
+        .circular-carousel__shade,
+        .circular-carousel__inner {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        
+        .circular-carousel__shade {
+            background: var(--cc-fade);
+            opacity: var(--cc-depth, 0);
+        }
+        
+        .circular-carousel__inner {
+            background: transparent; 
+        }
+        
+        @keyframes circular-carousel-title {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes circular-carousel-leave {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        @keyframes circular-carousel-reveal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ffd9e0",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#f4ede5",
+                        "secondary": "#864d5e",
+                        "primary": "#6a243b",
+                        "surface-dim": "#dfd9d1",
+                        "surface-container-high": "#eee7df",
+                        "tertiary": "#4a383f",
+                        "tertiary-fixed": "#f7dce4",
+                        "on-primary-fixed-variant": "#762e45",
+                        "on-tertiary-container": "#dcc2ca",
+                        "on-primary-fixed": "#3e011a",
+                        "surface-bright": "#fff8f1",
+                        "secondary-container": "#feb6c8",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#d8c1c5",
+                        "on-tertiary-fixed-variant": "#544248",
+                        "outline": "#867276",
+                        "on-secondary-container": "#7b4454",
+                        "inverse-primary": "#ffb1c4",
+                        "surface-variant": "#e8e1da",
+                        "on-secondary-fixed": "#360c1b",
+                        "primary-fixed-dim": "#ffb1c4",
+                        "secondary-fixed-dim": "#fbb3c5",
+                        "on-secondary-fixed-variant": "#6b3646",
+                        "tertiary-container": "#624f56",
+                        "inverse-surface": "#33302b",
+                        "surface-tint": "#93455c",
+                        "secondary-fixed": "#ffd9e1",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e8e1da",
+                        "on-primary-container": "#ffb5c6",
+                        "tertiary-fixed-dim": "#dac0c8",
+                        "primary-container": "#873b52",
+                        "background": "#fff8f1",
+                        "on-surface-variant": "#534346",
+                        "surface": "#fff8f1",
+                        "on-surface": "#1e1b17",
+                        "surface-container-low": "#f9f3eb",
+                        "error": "#ba1a1a",
+                        "on-background": "#1e1b17",
+                        "on-tertiary-fixed": "#26171d",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f7f0e8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container min-h-screen relative overflow-x-hidden">
+    
+    <!-- Canvas for confetti dipindah ke paling luar agar tidak tertutup container lain -->
+    <canvas class="fixed inset-0 pointer-events-none z-[9999] w-full h-full" id="confetti-canvas"></canvas>
+
+    <!-- Ambient Floating Hearts -->
+    <div class="ambient-heart left-[15%] text-secondary-container/40 text-2xl" style="animation-delay: 0s;">♥</div>
+    <div class="ambient-heart left-[40%] text-primary-fixed-dim/30 text-xl" style="animation-delay: 5s;">♥</div>
+    <div class="ambient-heart left-[70%] text-secondary-container/30 text-3xl" style="animation-delay: 3s;">♥</div>
+    <div class="ambient-heart left-[85%] text-primary-fixed-dim/40 text-lg" style="animation-delay: 7s;">♥</div>
+
+    <!-- Local Audio Player Widget -->
+    <div id="music-widget-container" class="fixed top-6 right-6 z-50 hidden items-center gap-2 bg-surface-container-high/95 backdrop-blur px-3 py-2 rounded-2xl shadow-xl border-2 border-primary/30 transition-all duration-700 animate-fadeIn">
+        <div class="flex items-center gap-2 text-primary">
+            <span class="material-symbols-outlined text-xl animate-spin">music_note</span>
+            <span class="text-xs font-semibold uppercase tracking-wider">Our Song 🎵</span>
+        </div>
+        <audio id="local-audio" src="audio/SpotiDown.App - Hannah Montana - Rex Orange County.mp3" preload="auto" loop controls></audio>
+    </div>
+
+    <main class="w-full min-h-screen flex items-center justify-center relative z-10 px-margin-mobile md:px-margin">
+        <div class="flex flex-col w-full relative">
+
+            <!-- ========================================== -->
+            <!-- PHASE 1: FULLSCREEN LOVE QUIZ OVERLAY      -->
+            <!-- ========================================== -->
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-surface px-4 md:px-8 transition-all duration-1000 ease-in-out" id="quiz-curtain">
+                <div class="absolute w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-2xl w-full bg-surface-container-low rounded-xl p-8 shadow-xl flex flex-col items-center text-center">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md uppercase tracking-wider mb-4">
+                        <span class="material-symbols-outlined text-sm">favorite</span> First Anniversary Keepsake
+                    </span>
+                    <h1 class="font-headline-lg text-headline-lg text-primary mb-2 text-4xl font-semibold font-serif">
+                        Hey, my love! 💗
+                    </h1>
+                    <p class="font-body-md text-on-surface-variant max-w-md mb-6">
+                        Before we begin our little love story, I have a tiny question for you...
+                    </p>
+                    <div class="w-full bg-surface-container rounded-lg p-4 mb-6">
+                        <p class="font-headline-sm text-headline-sm text-on-surface italic text-xl">
+                            "select one!!"
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-6" id="quiz-options-group">
+                        <button class="group relative rounded-xl overflow-hidden h-72 border-2 border-secondary/30 hover:border-secondary transition-all shadow-md focus:outline-none bg-surface-container cursor-pointer flex flex-col items-center justify-center" id="quiz-btn-left" type="button">
+                            <img src="images/image.png" onerror="this.src='https://placehold.co/400x500/f4ede5/864d5e?text=Foto+Kiri'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Foto Kiri">
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 flex items-end justify-center">
+                                <span class="text-sm font-bold text-white tracking-wide">Mingyu</span>
+                            </div>
+                        </button>
+                        
+                        <button class="group relative rounded-xl overflow-hidden h-72 border-2 border-primary/30 hover:border-primary transition-all shadow-md focus:outline-none bg-surface-container cursor-pointer" id="quiz-btn-right" type="button">
+                            <img src="images/image copy.png" onerror="this.src='https://placehold.co/400x500/6a243b/ffd9e0?text=Foto+Kanan'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Foto Kanan">
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 flex items-end justify-center">
+                                <span class="text-sm font-bold text-white tracking-wide">Mingyu Gunsar</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="min-h-[50px] w-full flex items-center justify-center p-2 rounded-lg transition-all duration-500 opacity-0 transform translate-y-2" id="quiz-feedback-box">
+                        <p class="font-body-md text-body-md text-primary font-medium italic text-center" id="quiz-feedback-text"></p>
+                    </div>
+
+                    <button class="hidden items-center justify-center gap-2 mt-4 px-8 py-3 bg-primary hover:bg-primary-container text-on-primary hover:text-primary rounded-lg font-body-md font-semibold transition-all duration-300 shadow-lg hover:scale-105 animate-pulse" id="quiz-continue-btn" type="button">
+                        <span>Continue, my love</span>
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- LUCY POP-UP MODAL (JIKA SALAH PILIH FOTO) -->
+            <!-- ========================================== -->
+            <div id="funny-popup" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm hidden px-4">
+                <div class="bg-surface-container-lowest rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center animate-popUp border-2 border-secondary-container">
+                    <div class="w-16 h-16 bg-secondary-fixed rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner text-3xl">
+                        😡
+                    </div>
+                    <h3 class="font-headline-md text-headline-md text-primary mb-2 text-2xl font-serif">Kok pilih yang itu si cuki! ☹️</h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mb-6 leading-relaxed">
+                        Pilih Mingyu Gunsar... Coba pilih foto yang sebelah kanan, biar bisa lanjut ke halaman selanjutnya! ❤️
+                    </p>
+                    <button onclick="closeFunnyPopup()" class="w-full py-2.5 px-4 bg-primary text-on-primary hover:bg-primary-container font-semibold rounded-xl shadow-md transition-all hover:scale-105">
+                        Coba Lagi 💖
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PHASE 2: ANNIVERSARY MAIN EXPERIENCE       -->
+            <!-- ========================================== -->
+
+            <!-- SECTION 1: HERO SECTION -->
+            <section class="w-full flex flex-col items-center justify-center pt-24 pb-16 relative overflow-hidden" id="hero-section">
+                <div class="w-full max-w-4xl flex flex-col items-center text-center relative z-10">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-xs font-semibold uppercase tracking-wider mb-6 shadow-sm">
+                        <span class="material-symbols-outlined text-base">auto_awesome</span>
+                        <span>1 Year • 365 Days • 8,760 Hours of Loving You</span>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl text-primary max-w-3xl mb-6 font-serif font-semibold leading-tight">
+                        Happy Anniversary, My Favorite Person <span class="text-secondary">❤️</span>
+                    </h1>
+                    <p class="text-lg text-on-surface-variant max-w-2xl mb-8 leading-relaxed">
+                        365 days of us, countless memories, and a lifetime of love still waiting for us. Every single second has been my favorite adventure.
+                    </p>
+                    
+                    <div class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-full shadow-sm mb-4 group transition-all duration-200">
+                        <span class="material-symbols-outlined text-primary text-sm">calendar_month</span>
+                        <span class="text-sm font-semibold text-on-surface outline-none" contenteditable="false" id="anniversary-date-display">October 24, 2025</span>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- COUNTER / STOPWATCH                        -->
+                    <!-- ========================================== -->
+                    <div class="mb-12 bg-surface-container-low px-6 py-4 rounded-2xl shadow-inner border border-outline-variant/30 flex items-center justify-center">
+                        <div class="counter text-2xl md:text-3xl font-serif text-primary font-bold">
+                            <div class="counter__row">
+                                <div class="counter__digit" id="time-years">0</div>
+                                <div class="counter__affix text-xs md:text-sm text-on-surface-variant font-sans font-medium uppercase tracking-widest ml-1 mr-3">Yrs</div>
+                                
+                                <div class="counter__digit" id="time-days">00</div>
+                                <div class="counter__affix text-xs md:text-sm text-on-surface-variant font-sans font-medium uppercase tracking-widest ml-1 mr-3">Days</div>
+                                
+                                <div class="counter__digit" id="time-hours">00</div>
+                                <div class="counter__affix text-xs md:text-sm text-on-surface-variant font-sans font-medium uppercase tracking-widest ml-1 mr-3">Hrs</div>
+                                
+                                <div class="counter__digit" id="time-mins">00</div>
+                                <div class="counter__affix text-xs md:text-sm text-on-surface-variant font-sans font-medium uppercase tracking-widest ml-1 mr-3">Mins</div>
+                                
+                                <div class="counter__digit" id="time-secs">00</div>
+                                <div class="counter__affix text-xs md:text-sm text-on-surface-variant font-sans font-medium uppercase tracking-widest ml-1">Secs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a class="inline-flex items-center gap-2 px-8 py-3 bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary rounded-lg font-semibold transition-all duration-300 shadow-md hover:scale-105" href="#timeline-section">
+                        <span>Our Little Story</span>
+                        <span class="material-symbols-outlined text-sm animate-bounce">arrow_downward</span>
+                    </a>
+                </div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-primary-fixed/20 blur-3xl pointer-events-none -z-10"></div>
+            </section>
+
+            <!-- SECTION 2: OUR LOVE STORY -->
+            <section class="w-full max-w-5xl mx-auto py-16 flex flex-col items-center" id="timeline-section">
+                <div class="text-center mb-16">
+                    <span class="text-xs uppercase tracking-wider text-secondary font-bold">Chapter 01</span>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mt-2">Our Love Story Timeline</h2>
+                    <p class="text-on-surface-variant mt-3 max-w-lg mx-auto">
+                        The little scrapbook moments, milestones, and spontaneous choices that brought us right here.
+                    </p>
+                </div>
+                <div class="relative w-full flex flex-col gap-16 px-4">
+                    <div class="absolute left-6 md:left-1/2 top-4 bottom-4 w-0.5 bg-secondary-container -translate-x-1/2 hidden sm:block"></div>
+                    
+                    <!-- Milestone 1 -->
+                    <div class="relative flex flex-col md:flex-row items-center w-full">
+                        <div class="w-full md:w-1/2 md:pr-12 flex justify-end">
+                            <div class="w-full max-w-md bg-surface-container rounded-xl p-5 shadow-md rotate-[-1deg] transition-transform hover:rotate-0">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-3 py-1 rounded-full bg-secondary-container/60 text-on-secondary-container text-xs font-bold">Milestone 01</span>
+                                    <span class="text-xs text-outline font-medium">Day One</span>
+                                </div>
+                                <h3 class="text-xl font-serif text-primary mb-2">The Day We Met</h3>
+                                <p class="text-sm text-on-surface-variant leading-relaxed">We first met when you were a PKMTI participant and I was one of the KEAMANAN team members.</p>
+                            </div>
+                        </div>
+                        <div class="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary shadow-sm hidden sm:block"></div>
+                        <div class="w-full md:w-1/2 md:pl-12"></div>
+                    </div>
+
+                    <!-- Milestone 2 -->
+                    <div class="relative flex flex-col md:flex-row items-center w-full">
+                        <div class="w-full md:w-1/2 md:pr-12"></div>
+                        <div class="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary-container shadow-sm hidden sm:block"></div>
+                        <div class="w-full md:w-1/2 md:pl-12 flex justify-start">
+                            <div class="w-full max-w-md bg-surface-container-lowest rounded-xl p-3 shadow-md rotate-[1.5deg] transition-transform hover:rotate-0 mt-8 md:mt-0">
+                                <div class="h-4 w-20 bg-secondary-container/40 mx-auto -mt-5 mb-3 rounded-sm"></div>
+                                <div class="w-full h-48 rounded-lg overflow-hidden mb-3 bg-surface-container">
+                                    <img class="w-full h-full object-cover" src="images/firstdate.jpeg" alt="Cozy coffee shop date" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=800'" />
+                                </div>
+                                <div class="px-3 pb-3">
+                                    <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">The Beginning</span>
+                                    <h3 class="text-xl font-serif text-primary mt-1 mb-2">Our First Date</h3>
+                                    <p class="text-sm text-on-surface-variant leading-relaxed">Our first date was watching Captain America: Brave New World together.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestone 3 -->
+                    <div class="relative flex flex-col md:flex-row items-center w-full">
+                        <div class="w-full md:w-1/2 md:pr-12 flex justify-end">
+                            <div class="w-full max-w-md bg-surface-container-lowest rounded-xl p-3 shadow-md rotate-[-1.5deg] transition-transform hover:rotate-0 mt-8 md:mt-0">
+                                <div class="h-4 w-20 bg-primary-fixed/50 mx-auto -mt-5 mb-3 rounded-sm"></div>
+                                <div class="w-full h-48 rounded-lg overflow-hidden mb-3 bg-surface-container">
+                                    <img class="w-full h-full object-cover" src="images/Screenshot 2026-10-23 at 17.29.06.png" alt="Makrab moment" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'" />
+                                </div>
+                                <div class="px-3 pb-3">
+                                    <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">Unforgettable</span>
+                                    <h3 class="text-xl font-serif text-primary mt-1 mb-2">Officially Relationship</h3>
+                                    <p class="text-sm text-on-surface-variant leading-relaxed">On October 24, 2025, we officially started relationship, though the way we confessed our feelings wasn't very romantic, as it happened just over chat.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-primary shadow-sm hidden sm:block"></div>
+                        <div class="w-full md:w-1/2 md:pl-12"></div>
+                    </div>
+
+                    <!-- Milestone 4 -->
+                    <div class="relative flex flex-col md:flex-row items-center w-full">
+                        <div class="w-full md:w-1/2 md:pr-12"></div>
+                        <div class="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-secondary shadow-sm hidden sm:block"></div>
+                        <div class="w-full md:w-1/2 md:pl-12 flex justify-start">
+                            <div class="w-full max-w-md bg-surface-container-lowest rounded-xl p-3 shadow-md rotate-[1deg] transition-transform hover:rotate-0 mt-8 md:mt-0">
+                                <div class="h-4 w-20 bg-secondary-container/40 mx-auto -mt-5 mb-3 rounded-sm"></div>
+                                <div class="px-3 pb-3">
+                                    <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">A Special Day</span>
+                                    <h3 class="text-xl font-serif text-primary mt-1 mb-2">Fisrst Anniversary</h3>
+                                    <p class="text-sm text-on-surface-variant leading-relaxed">Every moment with you becomes a beautiful addition to our story.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 3: REASONS WHY I LOVE YOU (PUZZLE) -->
+            <!-- ========================================== -->
+            <section class="w-full max-w-4xl mx-auto py-16 flex flex-col items-center px-4">
+                <div class="text-center mb-10">
+                    <span class="text-xs uppercase tracking-wider text-secondary font-bold">Chapter 02</span>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mt-2">Unlock the Reason Why I Love You 🧩</h2>
+                    <p class="text-sm text-on-surface-variant mt-3 max-w-md mx-auto leading-relaxed">
+                        Tap potongan foto di bawah, lalu tap kotak kosong di atas untuk menyusunnya. Ada pesan spesial yang menunggumu saat fotonya tersusun sempurna! ✨
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center w-full">
+                    <div id="puzzle-board" class="shadow-lg"></div>
+                    <div id="puzzle-tray"></div>
+                    <div class="mt-8 flex gap-4">
+                        <button id="btn-shuffle-puzzle" class="px-5 py-2.5 bg-surface-container-high text-on-surface-variant hover:text-primary hover:bg-surface-container-highest font-medium text-sm rounded-lg shadow-sm transition-all flex items-center gap-2 border border-outline/20">
+                            <span class="material-symbols-outlined text-sm">shuffle</span> Acak Ulang
+                        </button>
+                    </div>
+
+                    <div id="puzzle-success-message" class="hidden mt-10 w-full max-w-lg bg-surface-container-lowest border border-secondary-container rounded-xl p-8 shadow-2xl text-center flex-col items-center animate-fadeIn">
+                        <div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center shadow-inner mb-4">
+                            <span class="material-symbols-outlined text-3xl">volunteer_activism</span>
+                        </div>
+                        <h3 class="text-2xl font-serif text-primary mb-3">You completed the picture! 🎉</h3>
+                        <div class="bg-surface-container-low p-5 rounded-lg italic text-on-surface-variant text-sm leading-relaxed border-l-4 border-secondary text-left">
+                            "And just like these pieces, you make my life whole. Thank you for being the most beautiful part of my story, my favorite person, today and always. ❤️"
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 4: OUR MEMORIES CAROUSEL (CHAPTER 3)-->
+            <!-- ========================================== -->
+            <section class="w-full py-16 flex flex-col items-center overflow-hidden">
+                <div class="text-center mb-12 px-4">
+                    <span class="text-xs uppercase tracking-wider text-secondary font-bold">Chapter 03</span>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mt-2">Our Memories Carousel</h2>
+                 <p class="text-sm text-on-surface-variant mt-3 max-w-md mx-auto">
+                        swipe to see our photo.
+                    </p>   
+                </div>
+                
+                <div class="w-full h-[450px] relative my-6">
+                    <div id="memories-carousel" class="circular-carousel" data-axis="x" data-shape="panorama" data-draggable="true">
+                        <div class="circular-carousel__view">
+                            <div class="circular-carousel__stage">
+                                <div class="circular-carousel__camera">
+                                    <div class="circular-carousel__ring" id="carousel-ring">
+                                        <!-- Foto-foto Carousel -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="circular-carousel__shade"></div>
+                            <div class="circular-carousel__inner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 5: A LETTER FOR YOU -->
+            <!-- ========================================== -->
+            <section class="w-full max-w-3xl mx-auto py-16 flex flex-col items-center px-4">
+                <div class="text-center mb-12">
+                    <span class="text-xs uppercase tracking-wider text-secondary font-bold">Chapter 04</span>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mt-2">A Little Letter From My Heart 💌</h2>
+                    <p class="text-sm text-on-surface-variant mt-3">
+                        Sealed with devotion. Click the envelope wax seal to unfold.
+                    </p>
+                </div>
+                <div class="w-full relative flex flex-col items-center">
+                    <div class="w-full max-w-lg bg-surface-container-high rounded-2xl p-12 shadow-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-500 hover:scale-[1.02] relative overflow-hidden" id="envelope-cover">
+                        <div class="absolute inset-0 pointer-events-none opacity-10">
+                            <svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+                                <path class="text-primary" d="M0,0 L50,50 L100,0" fill="none" stroke="currentColor" stroke-width="2"></path>
+                            </svg>
+                        </div>
+                        <div class="w-24 h-24 rounded-full bg-primary-container text-on-primary-container flex flex-col items-center justify-center shadow-lg relative z-10 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110">
+                            <span class="material-symbols-outlined text-4xl">favorite</span>
+                            <span class="text-[10px] font-bold uppercase mt-1 tracking-widest">Unseal</span>
+                        </div>
+                        <span class="text-sm text-primary font-medium mt-6 z-10">Tap to open letter</span>
+                    </div>
+                    
+                    <div class="hidden w-full max-w-2xl bg-surface-container-lowest rounded-2xl p-8 md:p-12 shadow-2xl relative transition-all duration-700 mt-6 border border-outline-variant/30" id="letter-content">
+                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-outline-variant/30">
+                            <span class="text-xs uppercase tracking-widest text-secondary font-bold">My Vow & Letter</span>
+                        </div>
+                        <div class="text-lg md:text-xl font-serif text-on-surface leading-loose italic outline-none transition-all focus:bg-surface-container-low rounded-xl p-4 -mx-4" contenteditable="false" id="love-letter-body">
+                            ", Happy 1st anniversary, sayang! ❤️ Thank you for being part of my life, for every laugh, every little moment, and every memory we've created together. You make my world feel warmer, and I'm so happy that I get to call you mine. One year with you has given me so many beautiful memories, and I hope this is just the beginning of our story. I know we won't always have perfect days, but I hope we'll keep learning, growing, and choosing each other through it all. I hope I can keep making you feel loved, not just today, but every single day. I want more dates, more pictures, more silly moments, more hugs, and more years with you. If I could go back to the day we first met, I'd still want to know you, fall for you, and choose you all over again. Here's to our first year and all the anniversaries still waiting for us. I love you so much, sayangs. ❤️."
+                        </div>
+                        <div class="mt-10 flex justify-end">
+                            <div class="text-right">
+                                <p class="text-xl font-serif text-primary font-medium">Forever Yours,</p>
+                                <p class="text-sm text-on-surface-variant mt-1">Happy 1st Anniversary</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- SECTION 6: FINAL SURPRISE & HEART CONFETTI -->
+            <!-- ========================================== -->
+            <section class="w-full max-w-3xl mx-auto py-16 flex flex-col items-center text-center px-4 mb-20">
+                <div class="w-full bg-surface-container rounded-3xl p-10 md:p-16 shadow-lg border border-outline-variant/20 relative overflow-hidden flex flex-col items-center">
+                    <span class="material-symbols-outlined text-5xl text-primary mb-6 animate-bounce">favorite</span>
+                    <blockquote class="text-2xl md:text-4xl font-serif text-primary max-w-xl mb-6 leading-tight">
+                        "If I could choose again, in every lifetime, I'd still choose you."
+                    </blockquote>
+                    <p class="text-lg text-on-surface-variant max-w-lg mb-10">
+                        Will you keep making beautiful memories with me?
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-4" id="proposal-buttons">
+                        <button class="px-8 py-3.5 bg-primary-container text-on-primary-container hover:bg-primary hover:text-white rounded-xl font-semibold transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1 flex items-center gap-2" id="btn-choice-always" type="button">
+                            <span>Always ❤️</span>
+                        </button>
+                        <button class="px-8 py-3.5 bg-secondary-container text-on-secondary-container hover:bg-primary-fixed rounded-xl font-semibold transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 flex items-center gap-2" id="btn-choice-ofcourse" type="button">
+                            <span>Of course! 🥹</span>
+                        </button>
+                    </div>
+                    <div class="hidden flex-col items-center mt-12 transition-all duration-700 animate-fadeIn" id="surprise-declaration">
+                        <div class="p-6 rounded-2xl bg-surface-container-lowest shadow-inner border border-primary/20 max-w-xl mb-6">
+                            <p class="text-xl font-serif text-primary font-medium italic leading-relaxed">
+                                "Here's to us, to our love, and to all the beautiful chapters still to come. I love you endlessly. ❤️"
+                            </p>
+                        </div>
+                        <button class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors text-sm font-semibold" id="replay-surprise-btn" type="button">
+                            <span class="material-symbols-outlined text-base">celebration</span>
+                            <span>Celebrate Again ✨</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <script>
+            // ==========================================
+            // TIMER / COUNTER LOGIC
+            // ==========================================
+            function updateLoveTimer() {
+                const startDate = new Date("2025-10-24T00:00:00").getTime();
+                const now = new Date().getTime();
+                const difference = now - startDate;
+
+                if (difference > 0) {
+                    const years = Math.floor(difference / (1000 * 60 * 60 * 24 * 365));
+                    const days = Math.floor((difference % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                    document.getElementById("time-years").innerText = years;
+                    document.getElementById("time-days").innerText = days.toString().padStart(2, '0');
+                    document.getElementById("time-hours").innerText = hours.toString().padStart(2, '0');
+                    document.getElementById("time-mins").innerText = minutes.toString().padStart(2, '0');
+                    document.getElementById("time-secs").innerText = seconds.toString().padStart(2, '0');
+                }
+            }
+            setInterval(updateLoveTimer, 1000);
+            updateLoveTimer(); 
+
+            // ==========================================
+            // SETUP CANVAS (Dipakai oleh Mawar & Hati)
+            // ==========================================
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // ==========================================
+            // ROSES POP-UP LOGIC 
+            // Bunga lebih besar dan menembak dari pinggir ke tengah
+            // ==========================================
+            let roses = [];
+            let isRosesRunning = false;
+
+            function launchRoses() {
+                roses = [];
+                // Membuat 60 letupan bunga mawar agar tidak terlalu sumpek karena bunganya besar
+                const numRoses = 60;
+                
+                for (let i = 0; i < numRoses; i++) {
+                    // Tentukan apakah mawar ini diluncurkan dari kiri atau kanan
+                    const isLeft = Math.random() > 0.5;
+                    
+                    // Posisi awal: dari luar pinggir layar sebelah bawah
+                    const startX = isLeft ? -50 : canvas.width + 50;
+                    const startY = canvas.height + 50; 
+                    
+                    // Kecepatan horizontal (X):
+                    // Jika dari kiri, tembak ke kanan (kecepatan positif)
+                    // Jika dari kanan, tembak ke kiri (kecepatan negatif)
+                    const speedX = isLeft ? (Math.random() * 12 + 6) : -(Math.random() * 12 + 6);
+                    
+                    // Kecepatan vertikal (Y): Melompat kuat ke atas
+                    const speedY = -(Math.random() * 18 + 15);
+
+                    roses.push({
+                        x: startX,
+                        y: startY,
+                        size: Math.random() * 40 + 40, // UKURAN BESAR (40px - 80px)
+                        speedX: speedX,
+                        speedY: speedY,
+                        gravity: 0.35, // Tarikan ke bawah agar berbentuk lengkungan
+                        rotation: Math.random() * 360,
+                        rotSpeed: (Math.random() - 0.5) * 10
+                    });
+                }
+                
+                if (!isRosesRunning) {
+                    isRosesRunning = true;
+                    requestAnimationFrame(renderRoses);
+                }
+            }
+
+            function renderRoses() {
+                // Hanya bersihkan kanvas jika confetti hati sedang tidak berjalan
+                if (!isConfettiRunning) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let hasActiveRoses = false;
+
+                for (let r of roses) {
+                    r.x += r.speedX;
+                    r.y += r.speedY;
+                    r.speedY += r.gravity; // Efek gravitasi menarik mawar kembali ke bawah
+                    r.rotation += r.rotSpeed;
+
+                    // Render bunga selama belum jauh melewati batas bawah layar
+                    if (r.y < canvas.height + 150) {
+                        hasActiveRoses = true;
+                        ctx.save();
+                        ctx.translate(r.x, r.y);
+                        ctx.rotate(r.rotation * Math.PI / 180);
+                        ctx.font = r.size + "px Arial";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("🌹", 0, 0); 
+                        ctx.restore();
+                    }
+                }
+
+                if (hasActiveRoses) {
+                    requestAnimationFrame(renderRoses);
+                } else {
+                    isRosesRunning = false;
+                    if (!isConfettiRunning) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+
+            // ==========================================
+            // PHASE 1: Quiz & Modals Logic
+            // ==========================================
+            const quizCurtain = document.getElementById('quiz-curtain');
+            const quizBtnLeft = document.getElementById('quiz-btn-left');
+            const quizBtnRight = document.getElementById('quiz-btn-right');
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            const feedbackText = document.getElementById('quiz-feedback-text');
+            const continueBtn = document.getElementById('quiz-continue-btn');
+            const funnyPopup = document.getElementById('funny-popup');
+            const musicWidgetContainer = document.getElementById('music-widget-container');
+            const localAudio = document.getElementById('local-audio');
+
+            function handleQuizChoice(isRight) {
+                if (!isRight) {
+                    quizBtnLeft.classList.add('border-secondary', 'ring-4', 'ring-secondary/30');
+                    funnyPopup.classList.remove('hidden'); 
+                } else {
+                    quizBtnRight.classList.add('border-primary', 'ring-4', 'ring-primary/30');
+                    quizBtnLeft.classList.remove('border-secondary', 'ring-4', 'ring-secondary/30');
+                    
+                    feedbackBox.classList.remove('opacity-0', 'translate-y-2');
+                    feedbackBox.classList.add('opacity-100', 'translate-y-0');
+                    feedbackText.textContent = "Yeeaay! Pilihan yang Tepat✨💖";
+                    
+                    continueBtn.classList.remove('hidden');
+                    continueBtn.classList.add('flex');
+                }
+            }
+
+            function closeFunnyPopup() {
+                funnyPopup.classList.add('hidden');
+            }
+
+            quizBtnLeft.addEventListener('click', () => handleQuizChoice(false));
+            quizBtnRight.addEventListener('click', () => handleQuizChoice(true));
+
+            continueBtn.addEventListener('click', () => {
+                quizCurtain.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    quizCurtain.style.display = 'none';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    musicWidgetContainer.classList.remove('hidden');
+                    musicWidgetContainer.classList.add('flex');
+                    
+                    // Mainkan musik
+                    localAudio.play().catch(error => {
+                        console.log("Autoplay dicegah browser, user dapat memutar manual dari kontrol audio.", error);
+                    });
+
+                    // PICU LEDAKAN BUNGA MAWAR DARI PINGGIR KE TENGAH BERSAMAAN DENGAN MUSIK
+                    launchRoses();
+
+                }, 1000);
+            });
+
+            // ==========================================
+            // SECTION 3: Puzzle Game Logic
+            // ==========================================
+            const PUZZLE_SIZE = 3; 
+            const TOTAL_TILES = PUZZLE_SIZE * PUZZLE_SIZE;
+            const puzzleBoard = document.getElementById('puzzle-board');
+            const puzzleTray = document.getElementById('puzzle-tray');
+            const btnShuffle = document.getElementById('btn-shuffle-puzzle');
+            const successMessage = document.getElementById('puzzle-success-message');
+            
+            const puzzleImageUrl = 'images/puzzle.png';
+            let selectedPiece = null; 
+
+            function initPuzzle() {
+                puzzleBoard.innerHTML = ''; 
+                puzzleTray.innerHTML = '';
+                successMessage.classList.add('hidden');
+                successMessage.classList.remove('flex');
+                selectedPiece = null;
+
+                const img = new Image();
+                img.src = puzzleImageUrl;
+                
+                img.onload = () => {
+                    const ratio = img.naturalWidth / img.naturalHeight;
+                    puzzleBoard.style.aspectRatio = ratio;
+                    document.documentElement.style.setProperty('--img-ratio', ratio);
+                    createPuzzleElements();
+                };
+                
+                img.onerror = () => {
+                    puzzleBoard.style.aspectRatio = "1"; 
+                    document.documentElement.style.setProperty('--img-ratio', 1);
+                    createPuzzleElements();
+                };
+            }
+
+            function createPuzzleElements() {
+                let pieces = [];
+                for (let i = 0; i < TOTAL_TILES; i++) {
+                    const dropZone = document.createElement('div');
+                    dropZone.classList.add('puzzle-drop-zone');
+                    dropZone.dataset.index = i;
+                    dropZone.addEventListener('click', handleDropZoneClick);
+                    puzzleBoard.appendChild(dropZone);
+
+                    const piece = document.createElement('div');
+                    piece.classList.add('puzzle-piece');
+                    piece.style.backgroundImage = `url('${puzzleImageUrl}')`;
+                    piece.dataset.correctIndex = i; 
+                    
+                    const col = i % PUZZLE_SIZE;
+                    const row = Math.floor(i / PUZZLE_SIZE);
+                    const bgPosX = col * (100 / (PUZZLE_SIZE - 1));
+                    const bgPosY = row * (100 / (PUZZLE_SIZE - 1));
+                    piece.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+                    
+                    piece.addEventListener('click', handlePieceClick);
+                    pieces.push(piece);
+                }
+                shuffleArray(pieces);
+                pieces.forEach(piece => puzzleTray.appendChild(piece));
+            }
+
+            function handlePieceClick(e) {
+                e.stopPropagation(); 
+                if (selectedPiece === this) {
+                    deselectPiece();
+                } else if (selectedPiece === null) {
+                    selectPiece(this);
+                } else {
+                    swapPieces(selectedPiece, this);
+                    deselectPiece();
+                    checkPuzzleCompletion();
+                }
+            }
+
+            function handleDropZoneClick(e) {
+                if (selectedPiece !== null) {
+                    this.appendChild(selectedPiece);
+                    deselectPiece();
+                    checkPuzzleCompletion();
+                }
+            }
+
+            puzzleTray.addEventListener('click', () => {
+                if (selectedPiece !== null && selectedPiece.parentElement !== puzzleTray) {
+                    puzzleTray.appendChild(selectedPiece);
+                    deselectPiece();
+                    checkPuzzleCompletion();
+                }
+            });
+
+            function selectPiece(piece) {
+                if (selectedPiece) selectedPiece.classList.remove('selected');
+                selectedPiece = piece;
+                selectedPiece.classList.add('selected');
+            }
+
+            function deselectPiece() {
+                if (selectedPiece) {
+                    selectedPiece.classList.remove('selected');
+                    selectedPiece = null;
+                }
+            }
+
+            function swapPieces(piece1, piece2) {
+                const parent1 = piece1.parentNode;
+                const sibling1 = piece1.nextSibling === piece2 ? piece1 : piece1.nextSibling;
+                piece2.parentNode.insertBefore(piece1, piece2);
+                parent1.insertBefore(piece2, sibling1);
+            }
+
+            function checkPuzzleCompletion() {
+                const dropZones = puzzleBoard.querySelectorAll('.puzzle-drop-zone');
+                let isComplete = true;
+                dropZones.forEach(zone => {
+                    if (zone.children.length === 0) {
+                        isComplete = false;
+                    } else {
+                        const piece = zone.children[0];
+                        if (zone.dataset.index !== piece.dataset.correctIndex) {
+                            isComplete = false;
+                        }
+                    }
+                });
+
+                if (isComplete && puzzleTray.children.length === 0) {
+                    setTimeout(() => {
+                        successMessage.classList.remove('hidden');
+                        successMessage.classList.add('flex');
+                        launchHearts(); 
+                    }, 300);
+                }
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            btnShuffle.addEventListener('click', initPuzzle);
+            document.addEventListener('DOMContentLoaded', initPuzzle);
+
+
+            // ==========================================
+            // CHAPTER 3: Circular Carousel 3D Logic
+            // ==========================================
+            const carouselImagesList = [
+                "images/puzzle.png", 
+                "images/memo1.jpeg", 
+                "images/memo2.jpeg",
+                "images/memo3.jpeg", 
+                "images/memo4.jpeg",
+                "images/memo5.jpeg",
+                "images/memo6.jpeg",
+                "images/memo7.jpeg",
+                "images/memo8.jpeg",
+                "images/memo9.jpeg",
+                "images/memo10.jpeg",
+                "images/memo11.jpeg",
+                "images/memo12.jpeg",
+                "images/memo13.jpeg",
+                "images/memo14.jpeg"
+            ];
+
+            const ring = document.getElementById('carousel-ring');
+            const carousel = document.getElementById('memories-carousel');
+            const carouselNumCards = carouselImagesList.length;
+            
+            const cardWidth = 240; 
+            const cardHeight = 320;
+            const circleRadius = Math.round((cardWidth / 2) / Math.tan(Math.PI / carouselNumCards)) + 40;
+
+            carouselImagesList.forEach((src, i) => {
+                const angle = (360 / carouselNumCards) * i;
+                const card = document.createElement('div');
+                card.className = 'circular-carousel__card';
+                card.style.transform = `rotateY(${angle}deg) translateZ(${circleRadius}px)`;
+                card.style.width = `${cardWidth}px`;
+                card.style.height = `${cardHeight}px`;
+                card.style.left = `${-cardWidth/2}px`;
+                card.style.top = `${-cardHeight/2}px`;
+
+                card.innerHTML = `
+                    <div class="circular-carousel__tile" style="width: 100%; height: 100%;">
+                        <div class="circular-carousel__frame">
+                            <img class="circular-carousel__photo" src="${src}" alt="Memories">
+                        </div>
+                    </div>
+                `;
+                ring.appendChild(card);
+            });
+
+            setTimeout(() => {
+                carousel.setAttribute('data-ready', 'true');
+            }, 300);
+
+            let currentRotationY = 0;
+            let startDragX = 0;
+            let isDraggingCarousel = false;
+            let startRotationY = 0;
+
+            function updateRingTransform() {
+                ring.style.transform = `translateZ(${-circleRadius}px) rotateY(${currentRotationY}deg)`;
+            }
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDraggingCarousel = true;
+                startDragX = e.pageX;
+                startRotationY = currentRotationY;
+                carousel.setAttribute('data-dragging', 'true');
+            });
+            window.addEventListener('mousemove', (e) => {
+                if(!isDraggingCarousel) return;
+                const dx = e.pageX - startDragX;
+                currentRotationY = startRotationY + (dx * 0.3); 
+                updateRingTransform();
+            });
+            window.addEventListener('mouseup', () => {
+                isDraggingCarousel = false;
+                carousel.removeAttribute('data-dragging');
+            });
+
+            carousel.addEventListener('touchstart', (e) => {
+                isDraggingCarousel = true;
+                startDragX = e.touches[0].pageX;
+                startRotationY = currentRotationY;
+                carousel.setAttribute('data-dragging', 'true');
+            });
+            window.addEventListener('touchmove', (e) => {
+                if(!isDraggingCarousel) return;
+                e.preventDefault(); 
+                const dx = e.touches[0].pageX - startDragX;
+                currentRotationY = startRotationY + (dx * 0.3);
+                updateRingTransform();
+            }, { passive: false });
+            window.addEventListener('touchend', () => {
+                isDraggingCarousel = false;
+                carousel.removeAttribute('data-dragging');
+            });
+
+            setInterval(() => {
+                if(!isDraggingCarousel) {
+                    currentRotationY -= 0.10;
+                    updateRingTransform();
+                }
+            }, 16);
+            
+            updateRingTransform();
+
+
+            // ==========================================
+            // Envelope Reveal Logic
+            // ==========================================
+            const envelopeCover = document.getElementById('envelope-cover');
+            const letterContent = document.getElementById('letter-content');
+
+            envelopeCover.addEventListener('click', () => {
+                envelopeCover.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
+                setTimeout(() => envelopeCover.style.display = 'none', 500);
+                
+                letterContent.classList.remove('hidden');
+                letterContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+
+            // ==========================================
+            // SECTION 6: FINAL SURPRISE & HEART CONFETTI 
+            // ==========================================
+            const btnAlways = document.getElementById('btn-choice-always');
+            const btnOfCourse = document.getElementById('btn-choice-ofcourse');
+            const surpriseDeclaration = document.getElementById('surprise-declaration');
+            const replayBtn = document.getElementById('replay-surprise-btn');
+            
+            let hearts = [];
+            let isConfettiRunning = false;
+
+            function launchHearts() {
+                hearts = [];
+                const colors = ['#873b52', '#feb6c8', '#6a243b', '#ffd9e0', '#ffb1c4'];
+                
+                // Membuat 150 hati confetti
+                for (let i = 0; i < 150; i++) {
+                    hearts.push({
+                        x: Math.random() * canvas.width,
+                        y: -Math.random() * canvas.height - 50, // Muncul dari atas luar layar
+                        size: Math.random() * 15 + 10,
+                        speedY: Math.random() * 4 + 2, 
+                        speedX: Math.random() * 3 - 1.5, 
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        opacity: 1,
+                        rotation: Math.random() * Math.PI * 2,
+                        rotSpeed: Math.random() * 0.05 - 0.025
+                    });
+                }
+
+                if (!isConfettiRunning) {
+                    isConfettiRunning = true;
+                    requestAnimationFrame(renderConfetti);
+                }
+            }
+
+            function drawHeart(ctx, x, y, size, color, opacity, rotation) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rotation);
+                ctx.globalAlpha = opacity;
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                const d = size / 2;
+                ctx.moveTo(0, d / 2);
+                ctx.bezierCurveTo(0, 0, -d, 0, -d, d / 2);
+                ctx.bezierCurveTo(-d, d, 0, d * 1.5, 0, d * 2);
+                ctx.bezierCurveTo(0, d * 1.5, d, d, d, d / 2);
+                ctx.bezierCurveTo(d, 0, 0, 0, 0, d / 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function renderConfetti() {
+                // Hanya hapus canvas jika bunga mawar sedang tidak dirender
+                if(!isRosesRunning) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                let hasActiveHearts = false;
+                
+                for (let h of hearts) {
+                    h.y += h.speedY; // Turun ke bawah
+                    h.x += h.speedX; // Geser kiri kanan
+                    h.rotation += h.rotSpeed; // Putaran
+                    
+                    // Efek ayunan (wobble) natural
+                    h.x += Math.sin(h.y * 0.02) * 0.5;
+
+                    if (h.y < canvas.height + 100) {
+                        hasActiveHearts = true;
+                        drawHeart(ctx, h.x, h.y, h.size, h.color, h.opacity, h.rotation);
+                    }
+                }
+                
+                if (hasActiveHearts) {
+                    requestAnimationFrame(renderConfetti);
+                } else {
+                    isConfettiRunning = false;
+                    if(!isRosesRunning) ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            function triggerCelebration() {
+                surpriseDeclaration.classList.remove('hidden');
+                surpriseDeclaration.classList.add('flex');
+                
+                launchHearts(); // Jalankan confetti hujan hati
+                
+                setTimeout(() => {
+                    surpriseDeclaration.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+
+            btnAlways.addEventListener('click', triggerCelebration);
+            btnOfCourse.addEventListener('click', triggerCelebration);
+            replayBtn.addEventListener('click', launchHearts);
+        </script>
+    </main>
+</body>
+</html>
